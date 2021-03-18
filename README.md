@@ -3,8 +3,7 @@
 ## Data Crawling
 
 Collected news data using BeautifulSoup
-
-- Searched articles from Naver up to 2021.03.10.
+- Articles from Naver News up to 2021.03.10.
 - [DataFrame saved in a pickle file](https://drive.google.com/file/d/1c49c5rdJnVpeZ99u6MgEBfrK_bfnlOQW/view?usp=sharing)
 
   
