@@ -1,9 +1,7 @@
-import preprocess
-import summarizer
+import apiCrawler
 
 def run():
-    data = preprocess.pre_run()
-    summarizer.summarize(data)
+    apiCrawler.run()
 
 if __name__ == '__main__':
     print("Processing...")
