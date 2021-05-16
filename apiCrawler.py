@@ -6,7 +6,7 @@ import apiKeyword
 from urllib.parse import quote
 
 # Naver API call
-def call(keyword, display=10, start=1):
+def call(keyword, display=100, start=1):
     # API KEY  
     YOUR_CLIENT_ID = "LhQ0m10Z5peIimi7oIue"
     YOUR_CLIENT_SECRET = "d5EWrGTaPw"
