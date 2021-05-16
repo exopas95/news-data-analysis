@@ -3,7 +3,7 @@ def make_keyword(subject_dict, person_dict, addition_keyword_1='', addition_keyw
     result = []
     for person in person_dict:
         for subject in subject_dict:
-            result.append(subject + ' ' + addition_keyword_1 + person + addition_keyword_2)
+            result.append(subject + addition_keyword_1 + ' + ' + person + addition_keyword_2)
     return result
 
 def make_keyword_dict(): 
@@ -110,9 +110,9 @@ def get_keyword_list():
     keyword_ceo, keyword_company, keyowrd_ceo_company, keyword_condition = make_keyword_dict()
 
     keyword1 = make_keyword(keyword_condition['keyword_1']['case_1'], keyowrd_ceo_company)
-    keyword2 = make_keyword(keyword_condition['keyword_1']['case_2'], keyword_company, addition_keyword_2='일가')
+    keyword2 = make_keyword(keyword_condition['keyword_1']['case_2'], keyword_company, addition_keyword_2=' + 일가')
     keyword3 = make_keyword(keyword_condition['keyword_1']['case_3'], keyowrd_ceo_company)
-    keyword4 = make_keyword(keyword_condition['keyword_1']['case_4'], keyword_ceo, addition_keyword_1 = '연임')
+    keyword4 = make_keyword(keyword_condition['keyword_1']['case_4'], keyword_ceo, addition_keyword_1 = ' + 연임')
     keyword5 = make_keyword(keyword_condition['keyword_1']['case_5'], keyowrd_ceo_company)
     keyword6 = make_keyword(keyword_condition['keyword_1']['case_6'], keyowrd_ceo_company)
 
@@ -125,14 +125,14 @@ def get_keyword_list():
     keyword12 = make_keyword(keyword_condition['keyword_3']['case_4'], keyword_company)
     keyword13 = make_keyword(keyword_condition['keyword_3']['case_5'], keyword_company)
 
-    keyword14 = make_keyword(keyword_condition['keyword_4']['case_1'], keyword_ceo, addition_keyword_1 = '의원')
-    keyword15 = make_keyword(keyword_condition['keyword_4']['case_2'], keyword_ceo, addition_keyword_1 = '국회')
-    keyword16 = make_keyword(keyword_condition['keyword_4']['case_3'], keyword_ceo, addition_keyword_1 = '국회')
-    keyword17 = make_keyword(keyword_condition['keyword_4']['case_4'], keyword_ceo, addition_keyword_1 = '의원')
-    keyword18 = make_keyword(keyword_condition['keyword_4']['case_5'], keyword_company, addition_keyword_1 = '의원')
-    keyword19 = make_keyword(keyword_condition['keyword_4']['case_6'], keyword_company, addition_keyword_1 = '국회')
-    keyword20 = make_keyword(keyword_condition['keyword_4']['case_7'], keyword_company, addition_keyword_1 = '국회')
-    keyword21 = make_keyword(keyword_condition['keyword_4']['case_8'], keyword_company, addition_keyword_1 = '의원')
+    keyword14 = make_keyword(keyword_condition['keyword_4']['case_1'], keyword_ceo, addition_keyword_1 = ' + 의원')
+    keyword15 = make_keyword(keyword_condition['keyword_4']['case_2'], keyword_ceo, addition_keyword_1 = ' + 국회')
+    keyword16 = make_keyword(keyword_condition['keyword_4']['case_3'], keyword_ceo, addition_keyword_1 = ' + 국회')
+    keyword17 = make_keyword(keyword_condition['keyword_4']['case_4'], keyword_ceo, addition_keyword_1 = ' + 의원')
+    keyword18 = make_keyword(keyword_condition['keyword_4']['case_5'], keyword_company, addition_keyword_1 = ' + 의원')
+    keyword19 = make_keyword(keyword_condition['keyword_4']['case_6'], keyword_company, addition_keyword_1 = ' + 국회')
+    keyword20 = make_keyword(keyword_condition['keyword_4']['case_7'], keyword_company, addition_keyword_1 = ' + 국회')
+    keyword21 = make_keyword(keyword_condition['keyword_4']['case_8'], keyword_company, addition_keyword_1 = ' + 의원')
 
     keyword22 = make_keyword(keyword_condition['keyword_5']['case_1'], keyword_company)
 
@@ -144,19 +144,19 @@ def get_keyword_list():
     keyword26 = make_keyword(keyword_condition['keyword_8']['case_1'], keyword_company)
     keyword27 = make_keyword(keyword_condition['keyword_8']['case_2'], keyword_company)
 
-    keyword28 = make_keyword(keyword_condition['keyword_9']['case_1'], keyword_company, addition_keyword_1 = '소비자')
-    keyword29 = make_keyword(keyword_condition['keyword_9']['case_2'], keyword_company, addition_keyword_1 = '소비자')
+    keyword28 = make_keyword(keyword_condition['keyword_9']['case_1'], keyword_company, addition_keyword_1 = ' + 소비자')
+    keyword29 = make_keyword(keyword_condition['keyword_9']['case_2'], keyword_company, addition_keyword_1 = ' + 소비자')
     keyword30 = make_keyword(keyword_condition['keyword_9']['case_3'], keyword_company)
 
     keyword31 = make_keyword(keyword_condition['keyword_10']['case_1'], keyword_company)
-    keyword32 = make_keyword(keyword_condition['keyword_10']['case_2'], keyword_company, addition_keyword_1 = '국민권익위')
-    keyword33 = make_keyword(keyword_condition['keyword_10']['case_3'], keyword_company, addition_keyword_1 = '국민권익위')
+    keyword32 = make_keyword(keyword_condition['keyword_10']['case_2'], keyword_company, addition_keyword_1 = ' + 국민권익위')
+    keyword33 = make_keyword(keyword_condition['keyword_10']['case_3'], keyword_company, addition_keyword_1 = ' + 국민권익위')
 
-    keyword34 = make_keyword(keyword_condition['keyword_11']['case_1'], keyword_company, addition_keyword_1 = '노조')
+    keyword34 = make_keyword(keyword_condition['keyword_11']['case_1'], keyword_company, addition_keyword_1 = ' + 노조')
     keyword35 = make_keyword(keyword_condition['keyword_11']['case_2'], keyword_company)
 
     keyword36 = make_keyword(keyword_condition['keyword_12']['case_1'], keyword_company)
-    keyword37 = make_keyword(keyword_condition['keyword_12']['case_2'], keyword_company, addition_keyword_1 = '공정위')
+    keyword37 = make_keyword(keyword_condition['keyword_12']['case_2'], keyword_company, addition_keyword_1 = ' + 공정위')
     keyword38 = make_keyword(keyword_condition['keyword_12']['case_3'], keyword_company)
     keyword39 = make_keyword(keyword_condition['keyword_12']['case_4'], keyword_company)
 
