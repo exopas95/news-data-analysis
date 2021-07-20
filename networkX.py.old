@@ -1,0 +1,208 @@
+# %%
+import pandas as pd
+import numpy as np
+import re
+import networkx as nx
+import matplotlib.pyplot as plt
+
+from matplotlib import font_manager, rc
+from itertools import permutations
+
+# %%
+## 폰트 문제 해결하기
+font_path = "C:/Windows/Fonts/NGULIM.TTF"
+font = font_manager.FontProperties(fname=font_path).get_name()
+rc('font', family=font)
+ 
+plt.text(0.3, 0.3, '한글', size=100)
+
+# %%
+df = pd.read_csv('data\dart_data.csv')
+df = df[['nm', 'corp_name', 'ofcps', 'main_career']]
+df['temp'] = df['main_career']
+df = df.drop_duplicates()
+
+# %%
+df = df[df['corp_name'] == '삼성전자']
+df = df[['nm', 'main_career', 'temp']]
+
+# %%
+df['temp'] = df['temp'].str.replace('(전)', '', regex=False)
+df['temp'] = df['temp'].str.replace('[ㆍ前-]', '')
+df['temp'] = df['temp'].str.replace(' ', '')
+df['temp'] = df['temp'].str.lower()
+df['university'] = df[df['temp'].str.contains('대')]['temp'].str.split('대').str[0]
+
+univ_list = df.university.to_list()
+univ_list = list(set(univ_list))
+univ_list = univ_list[1:]
+
+#%%
+df_univ = df[['nm', 'university']].drop_duplicates()
+
+network_dict = {}
+
+for univ in univ_list:
+    network_dict[univ] = df_univ[df_univ['university'] == univ].nm.to_list()
+
+col_A = []
+col_B = []
+
+for univ in network_dict:
+    if len(network_dict[univ]) == 1:
+        col_A.append(network_dict[univ][0])
+        col_B.append(None)
+    else:
+        comb_list = list(permutations(network_dict[univ], 2))
+        for comb in comb_list:
+            col_A.append(comb[0])
+            col_B.append(comb[1])
+
+df_net = pd.DataFrame(list(zip(col_A, col_B)), columns =['to', 'from'])
+df_net['weight'] = 1
+df_net.loc[df_net.iloc[:,1] == None, 'weight'] = 0
+
+# %%
+df_result = df_net.dropna().reset_index(drop=True)
+
+g = nx.from_pandas_edgelist(df_result, 'to', 'from', create_using = nx.DiGraph())
+pos = nx.shell_layout(g)
+
+nx.draw_shell(g)
+nx.draw_networkx_labels(g, pos, font_family=font, font_size=10)
+plt.show()
+
+
+#%%
+
+# # %%
+# df['temp'] = df['temp'].str.replace('ㆍ', '')
+# df['temp'] = df['temp'].str.replace('(주)', '', regex=False)
+# df['temp'] = df['temp'].str.replace('-', '')
+# df['temp'] = df['temp'].str.replace('현)', '', regex=False)
+# df['temp'] = df['temp'].str.replace('現', '')
+# df['temp'] = df['temp'].str.replace('美', '')
+# df['temp'] = df['temp'].str.replace('.', '')
+# df['temp'] = df['temp'].str.replace('\d+', '')
+# df['temp'] = df['temp'].str.replace(':', '')
+# df['temp'] = df['temp'].str.replace('ㅇ', '')
+# df['temp'] = df['temp'].str.replace('대표', '')
+# df['temp'] = df['temp'].str.replace('대학교', '대')
+# df['temp'] = df['temp'].str.replace('대유에이텍', '')
+# # %%
+# df['university'] = df[df['temp'].str.contains('대')]['temp'].str.split('대').str[0]
+# df['university'] = df['university'].str.replace(' ', '')
+# df['university'] = df['university'].str.lower()
+# # %%
+# df = df.drop(columns=['temp'])
+# df.to_csv('data/dart_data_main.csv', encoding='utf-8-sig')
+# # %%
+# df = pd.read_csv('data\dart_data_main.csv')
+# df = df[['nm', 'university']]
+# # %%
+# univ_list = df.university.to_list()
+# univ_list = list(set(univ_list))
+# univ_list
+# # %%
+
+# %%
+# Create dataframe
+import math
+import itertools
+
+df = pd.read_csv('data\dart_data_processed4.csv', encoding='utf-8').drop(columns=['Unnamed: 0', 'main_career', 'ofcps', 'chrg_job'])
+df = df.fillna('-')
+
+corp = df.corp_name.to_list()
+career = df.career.to_list()
+
+for i in range(0, len(corp)):
+    if career[i] == '-':
+        career[i] = corp[i]
+    else:
+        career[i] = career[i] + ',' + corp[i]
+
+df_1 = df.copy().drop(columns='corp_name')
+df_1.nm = df.nm + '_' + df.corp_name
+df_1.career = career
+
+# %%
+# Calculate univeristy relation weights
+
+bachelor = list(set(df_1.bachelor.to_list()))
+bachelor.remove('-')
+
+from_list = []
+to_list = []
+weight_list = []
+
+for univ in bachelor:
+    name = df_1[df_1.bachelor.isin([univ])].nm
+    name_list = list(itertools.combinations(name, 2))
+
+    for line in name_list:
+        from_list.append(line[0])
+        to_list.append(line[1])
+        weight_list.append(0.5)
+
+df_net = pd.DataFrame(list(zip(from_list, to_list, weight_list)), columns =['to', 'from', 'weight'])
+
+# %%
+# Calculate university and major relation weights
+
+p_from = df_net.iloc[1,0]
+p_to = df_net.iloc[1,1]
+
+for i in range(0, df_net.shape[0]):
+    p_from = df_net.iloc[i,0]
+    p_to = df_net.iloc[i,1]
+
+    if df_1[df_1['nm'] == p_from].bachelor_major.values[0] == df_1[df_1['nm'] == p_to].bachelor_major.values[0]:
+        df_net.iloc[i,2] = 1
+
+
+
+
+
+# %%
+name_list
+# %%
+network_dict = {
+    'from': None,
+    'to': None,
+    'weight':None
+}
+
+# %%
+df_result = df.dropna().reset_index(drop=True)
+
+g = nx.from_pandas_edgelist(df_result, 'to', 'from', create_using = nx.DiGraph())
+# pos = nx.shell_layout(g)
+
+# nx.draw_shell(g)
+# nx.draw_networkx_labels(g, pos, font_family=font, font_size=10)
+# plt.show()
+# %%
+import operator
+
+dgr = nx.degree_centrality(g)
+btw = nx.betweenness_centrality(g)
+cls = nx.closeness_centrality(g)
+egv = nx.eigenvector_centrality(g)
+pgr = nx.pagerank(g)
+
+sorted_dgr = sorted(dgr.items(), key=operator.itemgetter(1), reverse = True)
+sorted_btw = sorted(btw.items(), key=operator.itemgetter(1), reverse = True)
+sorted_cls = sorted(cls.items(), key=operator.itemgetter(1), reverse = True)
+srted_egv = sorted(egv.items(), key=operator.itemgetter(1), reverse = True)
+sorted_pgr = sorted(pgr.items(), key=operator.itemgetter(1), reverse = True)
+
+G = nx.Graph()
+
+for i in range(len(sorted_pgr)):
+    G.add_node(sorted_pgr[i][0], nodesize=sorted_dgr[i][1])
+
+for ind in range((len(np.where(df_result['freq'] > 20000[0])))):
+    G.add_weighted_edges_from([])
+
+# %%
