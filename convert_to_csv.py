@@ -23,12 +23,13 @@ df.pubDate = df.pubDate.apply(lambda x: x[5:16])
 df.pubDate = df.pubDate.apply(lambda x: dt.strptime(x, '%d %b %Y').strftime('%Y-%m-%d'))
 
 result = df[['pubDate', 'title', 'description']].sort_values('pubDate', ascending=False).reset_index(drop=True).copy()
-# result.to_csv('data/crarwler_result_labeling.csv', encoding='utf-8-sig')
+# result.to_csv('data/crarwler_result_labeling.csv', encoding='utf
+# -8-sig')
 
-result_sample = result[result.pubDate > '2018-01-01'].sample(n=100000).sort_values('pubDate', ascending=False).reset_index(drop=True)
+result_sample = result[result.pubDate <= '2018-01-01'].sample(n=200000).sort_values('pubDate', ascending=False).reset_index(drop=True)
 
-for i in range(10):
-    start = i * 1000
-    end = (i + 1) * 1000
+for i in range(4):
+    start = i * 5000
+    end = (i + 1) * 5000
 
     result_sample.iloc[start:end, :].to_csv(f'data/crarwler_result_sample_labeling_{i}.csv', encoding='utf-8-sig')
