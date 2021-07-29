@@ -8,8 +8,8 @@ from urllib.parse import quote
 # Naver API call
 def call(keyword, display=100, start=1):
     # API KEY  
-    YOUR_CLIENT_ID = "LhQ0m10Z5peIimi7oIue"
-    YOUR_CLIENT_SECRET = "d5EWrGTaPw"
+    YOUR_CLIENT_ID = ""
+    YOUR_CLIENT_SECRET = ""
 
     encText = quote(keyword)
     url = "https://openapi.naver.com/v1/search/news.json?query=" + encText + f"&display={display}" + f"&start={str(start)}" 

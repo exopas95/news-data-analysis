@@ -35,18 +35,20 @@ def calculateUniversityWeights(Univ, df):
     from_list = []
     to_list = []
     weight_list = []
+    univ_list = []
 
     # If two people are from same university, add 0.5 weights
     for univ in net_list:
         name = df[df[Univ].isin([univ])].nm
-        name_list = list(itertools.combinations(name, 2))
+        name_list = list(itertools.permutations(name, 2))
 
         for line in name_list:
             from_list.append(line[0])
             to_list.append(line[1])
             weight_list.append(0.5)
+            univ_list.append(univ)
 
-    df_net = pd.DataFrame(list(zip(from_list, to_list, weight_list)), columns =['to', 'from', 'weight'])
+    df_net = pd.DataFrame(list(zip(from_list, to_list, univ_list, weight_list)), columns =['to', 'from', Univ, 'weight'])
 
     # If two people have same major, add 0.5 weights
     # Also consider whether they have multiple degrees
@@ -62,33 +64,33 @@ def calculateUniversityWeights(Univ, df):
             temp2 = major_2.split(',')
 
             if temp[0] == temp2[0] and temp[1] == temp2[1]:
-                df_net.iloc[i,2] = 2
+                df_net.iloc[i,3] = 2
 
             elif temp[0] == temp2[0]:
-                df_net.iloc[i,2] = 1
+                df_net.iloc[i,3] = 1
                 
             elif temp[1] == temp2[1]:
-                df_net.iloc[i,2] = 1
+                df_net.iloc[i,3] = 1
 
         elif ',' in major_1:
             temp = major_1.split(',')
             if major_2 in temp:
-                df_net.iloc[i,2] = 1
+                df_net.iloc[i,3] = 1
 
         elif ',' in major_2:
             temp = major_2.split(',')
             if major_1 in temp:
-                df_net.iloc[i,2] = 1
+                df_net.iloc[i,3] = 1
         else:
             if major_1 == major_2:
-                df_net.iloc[i,2] = 1
+                df_net.iloc[i,3] = 1
 
     return df_net
 
 # Calculate career relation weights
 def calculateCareerWeights(df):
     career_list = []
-    for sent in df_1.career.to_list():
+    for sent in df.career.to_list():
         for word in sent.split(','):
             career_list.append(word)
 
@@ -97,18 +99,20 @@ def calculateCareerWeights(df):
     from_list = []
     to_list = []
     weight_list = []
+    company_list = []
 
     # If two people have same career, add 1 weights
     for company in career_list:
         name = df[df.career.str.contains(company)].nm
-        name_list = list(itertools.combinations(name, 2))
+        name_list = list(itertools.permutations(name, 2))
 
         for line in name_list:
             from_list.append(line[0])
             to_list.append(line[1])
             weight_list.append(1)
+            company_list.append(company)
 
-    df_net = pd.DataFrame(list(zip(from_list, to_list, weight_list)), columns =['to', 'from', 'weight'])
+    df_net = pd.DataFrame(list(zip(from_list, to_list, company_list, weight_list)), columns =['to', 'from', 'company', 'weight'])
     
     return df_net
 # %%
@@ -122,7 +126,7 @@ font = font_manager.FontProperties(fname=font_path).get_name()
 
 # %%
 # Create dataframe
-df = pd.read_csv('data/dart_data_processed7.csv', encoding='utf-8').drop(columns=['Unnamed: 0', 'main_career', 'ofcps', 'chrg_job'])
+df = pd.read_csv('data/dart_data_processed.csv', encoding='utf-8').drop(columns=['Unnamed: 0', 'main_career', 'ofcps', 'chrg_job']).drop_duplicates()
 df = df.fillna('-')
 
 corp = df.corp_name.to_list()
@@ -146,13 +150,36 @@ df_career = calculateCareerWeights(df_1.drop(columns='corp_name'))
 
 # %%
 # Combine weights
-df_network = df_bachelor.set_index(['from', 'to']).add(df_master.set_index(['from', 'to']), fill_value=0).reset_index()
-df_network = df_network.set_index(['from', 'to']).add(df_career.set_index(['from', 'to']), fill_value=0).reset_index()
+df_network = df_bachelor.set_index(['from', 'to']).drop(columns='bachelor').add(df_master.set_index(['from', 'to']).drop(columns='master'), fill_value=0).reset_index()
+df_network = df_network.set_index(['from', 'to']).add(df_career.set_index(['from', 'to']).drop(columns='company'), fill_value=0).reset_index()
+df_network = df_network.merge(df_bachelor.drop(columns='weight'), how='left', on=['from', 'to'])
+df_network = df_network.merge(df_master.drop(columns='weight'), how='left', on=['from', 'to'])
+df_network = df_network.merge(df_career.drop(columns='weight'), how='left', on=['from', 'to'])
 
+# %%
+g = nx.from_pandas_edgelist(df_network, 'to', 'from', edge_attr = 'weight', create_using = nx.Graph())
+
+dgr = pd.DataFrame.from_dict(Counter(nx.degree_centrality(g)), orient='index').reset_index().rename(columns={'index':'from', 0:'dgr'})
+btw = pd.DataFrame.from_dict(Counter(nx.betweenness_centrality(g)), orient='index').reset_index().rename(columns={'index':'from', 0:'btw'})
+cls = pd.DataFrame.from_dict(Counter(nx.closeness_centrality(g)), orient='index').reset_index().rename(columns={'index':'from', 0:'cls'})
+egv = pd.DataFrame.from_dict(Counter(nx.eigenvector_centrality(g)), orient='index').reset_index().rename(columns={'index':'from', 0:'egv'})
+pgr = pd.DataFrame.from_dict(Counter(nx.pagerank(g)), orient='index').reset_index().rename(columns={'index':'from', 0:'pgr'})
+
+df_final = df_network.merge(dgr, how='left', on='from')
+df_final = df_final.merge(btw, how='left', on='from')
+df_final = df_final.merge(cls, how='left', on='from')
+df_final = df_final.merge(egv, how='left', on='from')
+df_final = df_final.merge(pgr, how='left', on='from')
+
+# %%
 # Save results
-# df_network.to_csv('data/networkX.csv', encoding='utf-8-sig')
-# print(df_network)
+df_final.to_csv('data/networkX.csv', encoding='utf-8-sig')
+print(df_final)
 
+# %%
+
+'''
+################### Create Graph ######################33 
 # %%
 df_network = df_network[df_network.weight > 1]      # Consider weights more than 1
 df_network.weight = df_network.weight * 1.5         # x1.5 for edge visualization 
@@ -200,5 +227,4 @@ print(f'Closeness: {cls}\n')
 print(f'Cetrality: {dgr}\n')
 print(f'Eigenvector: {egv}\n')
 print(f'Pagerank: {pgr}\n')
-
-# %%
+'''

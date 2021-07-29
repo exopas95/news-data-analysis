@@ -58,15 +58,9 @@ company_list = ['삼성전자', '한화', '아모레퍼시픽', 'CJ', '셀트리
                 '동국제강', '두산', '하이브', '엔씨소프트', '오뚜기',
                 '현대백화점', '현대자동차', '호텔신라', 'GS', '한국조선해양']
 
-# company_list = ['세아제강', '신성통상', '애경산업', '종근당',
-#                 '하이트진로', '남양유업', '코오롱' , '오리온', '웅진',
-#                 '카카오', '교촌에프앤비', '케이티앤지', '한샘', '포스코케미칼',
-#                 '우리금융지주', 'KB금융', '넥센', '농심', '대한항공',
-#                 '동국제강', '두산', '하이브', '엔씨소프트', '오뚜기',
-#                 '현대백화점', '현대자동차', '호텔신라', 'GS', '한국조선해양']
-
 company = corpInfo[corpInfo['corpName'].isin(company_list)].reset_index(drop=True)
 company.loc[:, 'corpCode'] = company.corpCode.map("{:08}".format)
+
 # %%
 bsnsYear = 2020     # 가장 최근 년도
 reprtCode = 11011   # 사업보고서
@@ -95,39 +89,4 @@ for corp in corpCode:
 # %%
 columns = ['corp_name', 'nm', 'ofcps', 'chrg_job', 'main_career']
 exctvInfo = pd.DataFrame(corpList, columns = columns)
-exctvInfo.to_csv('data\dart_data_processed_3.csv', encoding='utf-8-sig')
-
-# %%
-############################## 전처리 코드 ##############################
-# 세아제강
-df1 = exctvInfo[exctvInfo.corp_name == '세아제강']
-df1
-# %%
-# 신성통상
-# 애경산업
-# 종근당
-# 하이트진로
-# 남양유업
-# 코오롱
-# 오리온
-# 웅진
-# 카카오
-# 교촌에프앤비
-# 케이티앤지
-# 한샘
-# 포스코케미칼
-# 우리금융지주
-# KB금융
-# 넥센
-# 농심
-# 대한항공
-# 동국제강
-# 두산
-# 하이브
-# 엔씨소프트
-# 오뚜기
-# 현대백화점
-# 현대자동차
-# 호텔신라
-# GS
-# 한국조선해양
+exctvInfo.to_csv('data\dart_data_processed.csv', encoding='utf-8-sig')
