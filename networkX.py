@@ -177,10 +177,7 @@ df_final.to_csv('data/networkX.csv', encoding='utf-8-sig')
 print(df_final)
 
 # %%
-
-'''
-################### Create Graph ######################33 
-# %%
+df_network = df_final[['from', 'to', 'weight']]
 df_network = df_network[df_network.weight > 1]      # Consider weights more than 1
 df_network.weight = df_network.weight * 1.5         # x1.5 for edge visualization 
 
@@ -208,6 +205,7 @@ fig.set_size_inches(20, 15)
 
 plt.tight_layout()
 plt.show()
+
 # %%
 # Calculate betweenness / closeness / cetrality / eigenvector / pagerank
 # Betweeness: 노드 간의 최단 경로에서 얼마나 빈번하게 해당 노드를 지나가는지를 평가
@@ -227,4 +225,4 @@ print(f'Closeness: {cls}\n')
 print(f'Cetrality: {dgr}\n')
 print(f'Eigenvector: {egv}\n')
 print(f'Pagerank: {pgr}\n')
-'''
+# %%
