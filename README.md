@@ -51,8 +51,8 @@ Calculated individual betweenness / closeness / cetrality / eigenvector / pagera
 ### News Data Crawling
 Get Open API Key from the official website and change the key value from `apiCrawler.py`
 ```python
-    YOUR_CLIENT_ID = ""
-    YOUR_CLIENT_SECRET = ""
+YOUR_CLIENT_ID = ""
+YOUR_CLIENT_SECRET = ""
 ```
 
 Then run `python main.py` to execute the code
