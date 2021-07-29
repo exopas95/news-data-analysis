@@ -112,8 +112,28 @@ def calculateCareerWeights(df):
             weight_list.append(1)
             company_list.append(company)
 
-    df_net = pd.DataFrame(list(zip(from_list, to_list, company_list, weight_list)), columns =['to', 'from', 'company', 'weight'])
-    
+    temp = pd.DataFrame(list(zip(from_list, to_list, company_list, weight_list)), columns =['to', 'from', 'company', 'weight'])
+
+    df_net = temp.to + ',' + temp['from']
+    df_net = pd.DataFrame(df_net.value_counts()).reset_index().rename(columns={'index': 'nm', 0:'weight'})
+    df_net['t'] = df_net.nm.str.split(',')
+    df_net[['to','from']] = pd.DataFrame(df_net['t'].tolist(), index= df_net.index)
+    df_net['company'] = np.nan
+
+    dup_df = df_net[['to', 'from']]
+
+    for i in range(len(dup_df)):
+        A = dup_df.iloc[i, 0]
+        B = dup_df.iloc[i, 1]
+        comp = temp[(temp['to'].str.contains(A)) & (temp['from'].str.contains(B))].company.to_list()
+
+        if len(comp) > 1:
+            df_net.loc[(df_net['to'] == A) & (df_net['from'] == B),'company'] = ', '.join(comp)
+        else:
+            df_net.loc[(df_net['to'] == A) & (df_net['from'] == B),'company'] = comp
+
+    df_net = df_net.drop(columns=['nm', 't']).set_index(['to', 'from', 'company']).reset_index()
+
     return df_net
 # %%
 # Resolve Korean font error
@@ -147,6 +167,8 @@ df_1.career = career
 df_bachelor = calculateUniversityWeights('bachelor', df_1.drop(columns='corp_name'))
 df_master = calculateUniversityWeights('master', df_1.drop(columns='corp_name'))
 df_career = calculateCareerWeights(df_1.drop(columns='corp_name'))
+# %%
+df_career
 
 # %%
 # Combine weights
@@ -179,7 +201,7 @@ print(df_final)
 # %%
 df_network = df_final[['from', 'to', 'weight']]
 df_network = df_network[df_network.weight > 1]      # Consider weights more than 1
-df_network.weight = df_network.weight * 1.5         # x1.5 for edge visualization 
+# df_network.weight = df_network.weight * 1.5         # x1.5 for edge visualization 
 
 # Initialize networkx
 g = nx.from_pandas_edgelist(df_network, 'to', 'from', edge_attr = 'weight', create_using = nx.Graph())
