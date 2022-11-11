@@ -1,4 +1,4 @@
-# KIM & CHANG Project
+# News Data Analysis with Crawling and NLP
 
 ## News Data Crawling
 Collected news data using Naver Search API
